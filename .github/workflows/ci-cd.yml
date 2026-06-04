@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────────────────────
 # VUNA-Calc  ·  CI/CD Pipeline
 # Triggers on every push to main.
-# Stages: Validate → Deploy to VPS via SFTP
+# Stages: Validate → Deploy via cPanel API
 # ─────────────────────────────────────────────────────────────
 
 name: CI/CD Pipeline
@@ -48,7 +48,7 @@ jobs:
             src/
             README.md
 
-  # ── Stage 2: Deploy to VPS via SFTP ───────────────────────
+  # ── Stage 2: Deploy via cPanel API ────────────────────────
   deploy:
     name: Deploy to VPS (williams.vudse26.cloud)
     runs-on: ubuntu-latest
@@ -59,16 +59,35 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-        with:
-          username: ${{ secrets.SSH_USERNAME }}
-          server: ${{ secrets.SSH_HOST }}
-          port: 22
-          password: ${{ secrets.SSH_PASSWORD }}
-          local_path: './*'
-          remote_path: ${{ secrets.WEBROOT }}
-          sftp_only: true
+      - name: Create src directory on server via cPanel API
+        run: |
+          curl -sk -u "${{ secrets.SSH_USERNAME }}:${{ secrets.CPANEL_PASSWORD }}" \
+            "https://panel.vudse26.cloud:2083/execute/Fileman/mkdir" \
+            -d "path=%2Fhome%2Fwilliams.vudse26.cloud%2Fpublic_html&name=src" || true
+
+      - name: Upload index.html
+        run: |
+          curl -sk -u "${{ secrets.SSH_USERNAME }}:${{ secrets.CPANEL_PASSWORD }}" \
+            "https://panel.vudse26.cloud:2083/execute/Fileman/save_file_content" \
+            --data-urlencode "dir=/home/williams.vudse26.cloud/public_html" \
+            --data-urlencode "filename=index.html" \
+            --data-urlencode "content@index.html"
+
+      - name: Upload style.css
+        run: |
+          curl -sk -u "${{ secrets.SSH_USERNAME }}:${{ secrets.CPANEL_PASSWORD }}" \
+            "https://panel.vudse26.cloud:2083/execute/Fileman/save_file_content" \
+            --data-urlencode "dir=/home/williams.vudse26.cloud/public_html/src" \
+            --data-urlencode "filename=style.css" \
+            --data-urlencode "content@src/style.css"
+
+      - name: Upload calculator.js
+        run: |
+          curl -sk -u "${{ secrets.SSH_USERNAME }}:${{ secrets.CPANEL_PASSWORD }}" \
+            "https://panel.vudse26.cloud:2083/execute/Fileman/save_file_content" \
+            --data-urlencode "dir=/home/williams.vudse26.cloud/public_html/src" \
+            --data-urlencode "filename=calculator.js" \
+            --data-urlencode "content@src/calculator.js"
 
       - name: Confirm deployment
         run: echo "✅ Deployed to https://williams.vudse26.cloud"
