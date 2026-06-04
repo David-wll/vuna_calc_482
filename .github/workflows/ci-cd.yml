@@ -1,0 +1,75 @@
+# ─────────────────────────────────────────────────────────────
+# VUNA-Calc  ·  CI/CD Pipeline
+# Triggers on every push to main.
+# Stages: Validate → Deploy to VPS via SSH
+# ─────────────────────────────────────────────────────────────
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  # ── Stage 1: Validate ──────────────────────────────────────
+  validate:
+    name: Validate Source Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check required files exist
+        run: |
+          echo "Checking project structure..."
+          test -f index.html        && echo "✅  index.html found"      || (echo "❌  index.html missing" && exit 1)
+          test -f src/style.css     && echo "✅  style.css found"       || (echo "❌  style.css missing"  && exit 1)
+          test -f src/calculator.js && echo "✅  calculator.js found"   || (echo "❌  calculator.js missing" && exit 1)
+
+      - name: Validate HTML structure
+        run: |
+          echo "Checking HTML contains required elements..."
+          grep -q 'id="result"'          index.html && echo "✅  result display found"     || (echo "❌  result display missing" && exit 1)
+          grep -q 'id="expression"'      index.html && echo "✅  expression display found" || (echo "❌  expression display missing" && exit 1)
+          grep -q 'data-action="ac"'     index.html && echo "✅  AC button found"          || (echo "❌  AC button missing" && exit 1)
+          grep -q 'data-action="ce"'     index.html && echo "✅  CE button found"          || (echo "❌  CE button missing" && exit 1)
+          grep -q 'data-action="equals"' index.html && echo "✅  Equals button found"      || (echo "❌  Equals button missing" && exit 1)
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vuna-calc-build
+          path: |
+            index.html
+            src/
+            README.md
+
+  # ── Stage 2: Deploy to VPS via SSH ────────────────────────
+  deploy:
+    name: Deploy to VPS (williams.vudse26.cloud)
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
+      - name: Deploy files to server via SCP
+        run: |
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no -r \
+            index.html src/ README.md \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.WEBROOT }}
+
+      - name: Verify deployment
+        run: |
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
+            "echo '✅ Deployment successful!' && ls ${{ secrets.WEBROOT }}"

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VUNA-Calc</title>
+  <link rel="stylesheet" href="src/style.css" />
+</head>
+<body>
+  <div class="wrapper">
+    <div class="calculator">
+
+      <div class="brand">VUNA<span>CALC</span></div>
+
+      <!-- Display -->
+      <div class="display">
+        <div class="expression" id="expression"></div>
+        <div class="result" id="result">0</div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="buttons">
+        <!-- Row 1: utility + sign toggle + % -->
+        <button class="btn utility" data-action="ac">AC</button>
+        <button class="btn utility" data-action="ce">CE</button>
+        <button class="btn utility" data-action="sign">+/−</button>
+        <button class="btn operator" data-action="percent">%</button>
+
+        <!-- Row 2 -->
+        <button class="btn digit" data-value="7">7</button>
+        <button class="btn digit" data-value="8">8</button>
+        <button class="btn digit" data-value="9">9</button>
+        <button class="btn operator" data-action="op" data-value="/">÷</button>
+
+        <!-- Row 3 -->
+        <button class="btn digit" data-value="4">4</button>
+        <button class="btn digit" data-value="5">5</button>
+        <button class="btn digit" data-value="6">6</button>
+        <button class="btn operator" data-action="op" data-value="*">×</button>
+
+        <!-- Row 4 -->
+        <button class="btn digit" data-value="1">1</button>
+        <button class="btn digit" data-value="2">2</button>
+        <button class="btn digit" data-value="3">3</button>
+        <button class="btn operator" data-action="op" data-value="-">−</button>
+
+        <!-- Row 5 -->
+        <button class="btn digit zero" data-value="0">0</button>
+        <button class="btn digit" data-value=".">.</button>
+        <button class="btn operator" data-action="op" data-value="+">+</button>
+
+        <!-- Equals: full row -->
+        <button class="btn equals" data-action="equals">=</button>
+      </div>
+
+    </div>
+
+    <!-- History panel -->
+    <div class="history-panel">
+      <div class="history-header">
+        <span>History</span>
+        <button id="clearHistory">Clear</button>
+      </div>
+      <ul id="historyList"></ul>
+    </div>
+  </div>
+
+  <script src="src/calculator.js"></script>
+</body>
+</html>
