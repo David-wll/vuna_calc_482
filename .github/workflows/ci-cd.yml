@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────────────────────
 # VUNA-Calc  ·  CI/CD Pipeline
 # Triggers on every push to main.
-# Stages: Validate → Deploy to VPS via SSH
+# Stages: Validate → Deploy to VPS via SFTP
 # ─────────────────────────────────────────────────────────────
 
 name: CI/CD Pipeline
@@ -48,7 +48,7 @@ jobs:
             src/
             README.md
 
-  # ── Stage 2: Deploy to VPS via SSH ────────────────────────
+  # ── Stage 2: Deploy to VPS via SFTP ───────────────────────
   deploy:
     name: Deploy to VPS (williams.vudse26.cloud)
     runs-on: ubuntu-latest
@@ -59,22 +59,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install sshpass
-        run: sudo apt-get install -y sshpass
+      - name: Deploy via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          username: ${{ secrets.SSH_USERNAME }}
+          server: ${{ secrets.SSH_HOST }}
+          port: 22
+          password: ${{ secrets.SSH_PASSWORD }}
+          local_path: './*'
+          remote_path: ${{ secrets.WEBROOT }}
+          sftp_only: true
 
-      - name: Deploy files to server via SCP
-        run: |
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp \
-            -o StrictHostKeyChecking=no \
-            -o Port=22 \
-            -P 22 \
-            -r index.html src/ README.md \
-            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.WEBROOT }}
-
-      - name: Verify deployment
-        run: |
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh \
-            -o StrictHostKeyChecking=no \
-            -p 22 \
-            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
-            "echo '✅ Deployment successful!' && ls ${{ secrets.WEBROOT }}"
+      - name: Confirm deployment
+        run: echo "✅ Deployed to https://williams.vudse26.cloud"
