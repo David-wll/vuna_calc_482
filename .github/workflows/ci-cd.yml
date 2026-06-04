@@ -64,12 +64,17 @@ jobs:
 
       - name: Deploy files to server via SCP
         run: |
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no -r \
-            index.html src/ README.md \
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp \
+            -o StrictHostKeyChecking=no \
+            -o Port=22 \
+            -P 22 \
+            -r index.html src/ README.md \
             ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.WEBROOT }}
 
       - name: Verify deployment
         run: |
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh \
+            -o StrictHostKeyChecking=no \
+            -p 22 \
             ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
             "echo '✅ Deployment successful!' && ls ${{ secrets.WEBROOT }}"
