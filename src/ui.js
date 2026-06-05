@@ -67,7 +67,7 @@ function handleOperator(op) {
       const result = evaluateExpression(`${state.previous}${state.operator}${state.current}`);
       state.current = String(parseFloat(result.toPrecision(12)));
       popAnimation();
-    } catch (e) { state.current = 'Error'; }
+    } catch (_) { state.current = 'Error'; }
   }
   state.previous = state.current;
   state.operator = op;
@@ -90,7 +90,7 @@ function handleEquals() {
     state.justEvaluated = true;
     addToHistory(displayExpr, resultStr);
     popAnimation();
-  } catch (e) {
+  } catch (_) {
     state.current = 'Error';
   }
   clearOperatorHighlight();
@@ -124,7 +124,7 @@ function handlePercent() {
       state.current = String(parseFloat(result.toPrecision(12)));
       state.justEvaluated = true;
       popAnimation();
-    } catch (e) { state.current = 'Error'; }
+    } catch (_) { state.current = 'Error'; }
   } else {
     state.current = String(val / 100);
     state.justEvaluated = true;
