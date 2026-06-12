@@ -3,463 +3,100 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Williams David Urahojo — SEN 482</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <title>VUNA-Calc</title>
+  <link rel="stylesheet" href="../src/style.css" />
   <style>
-    /* ── Reset ─────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ── Tokens ────────────────────────────────────────── */
-    :root {
-      --bg:       #05050a;
-      --surface:  #0d0d18;
-      --border:   rgba(255,255,255,.07);
-      --blue:     #2563eb;
-      --blue-mid: #3b82f6;
-      --blue-glow:rgba(37,99,235,.25);
-      --text:     #e8e8f2;
-      --muted:    #555570;
-      --mono:     'JetBrains Mono', monospace;
-      --display:  'Syne', sans-serif;
-    }
-
-    /* ── Base ───────────────────────────────────────────── */
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--display);
-      min-height: 100vh;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ── Ambient background ─────────────────────────────── */
-    body::before {
-      content: '';
+    .back-btn {
       position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(37,99,235,.12) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 50% at 80% 80%, rgba(99,102,241,.07) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* ── Grid noise texture ─────────────────────────────── */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
-      background-size: 48px 48px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* ── Nav ────────────────────────────────────────────── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 48px;
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      background: rgba(5,5,10,.7);
-    }
-
-    .nav-brand {
-      font-family: var(--mono);
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--blue-mid);
-      letter-spacing: .15em;
-      text-transform: uppercase;
-    }
-
-    .nav-badge {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: .08em;
-      border: 1px solid var(--border);
-      padding: 4px 12px;
-      border-radius: 20px;
-    }
-
-    /* ── Hero ───────────────────────────────────────────── */
-    .hero {
-      position: relative;
-      z-index: 1;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 140px 24px 80px;
-      gap: 0;
-    }
-
-    /* Eyebrow */
-    .eyebrow {
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: .25em;
-      text-transform: uppercase;
-      color: var(--blue-mid);
-      margin-bottom: 32px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .eyebrow::before, .eyebrow::after {
-      content: '';
-      display: block;
-      width: 40px;
-      height: 1px;
-      background: var(--blue-mid);
-      opacity: .5;
-    }
-
-    /* Name */
-    .name {
-      font-size: clamp(44px, 8vw, 88px);
-      font-weight: 800;
-      line-height: .95;
-      letter-spacing: -.02em;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-    .name .first { display: block; }
-    .name .last {
-      display: block;
-      color: transparent;
-      -webkit-text-stroke: 1.5px rgba(255,255,255,.25);
-    }
-
-    /* Matric */
-    .matric-wrap {
-      margin: 28px 0 20px;
+      top: 20px;
+      left: 24px;
+      z-index: 999;
       display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(37,99,235,.08);
-      border: 1px solid rgba(37,99,235,.2);
-      border-radius: 8px;
-      padding: 10px 20px;
-    }
-    .matric-label {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: .15em;
-      text-transform: uppercase;
-    }
-    .matric-value {
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--blue-mid);
-      letter-spacing: .08em;
-    }
-
-    /* Course info */
-    .course-info {
-      display: flex;
-      gap: 32px;
-      margin: 24px 0 48px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .course-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .course-item-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: .2em;
-      text-transform: uppercase;
-    }
-    .course-item-value {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    /* Divider dots */
-    .dot-divider {
-      width: 4px; height: 4px;
-      border-radius: 50%;
-      background: var(--muted);
-      align-self: center;
-      opacity: .4;
-    }
-
-    /* ── CTA Button ─────────────────────────────────────── */
-    .cta-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      margin-top: 8px;
-    }
-
-    .cta-btn {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--blue);
-      color: #fff;
-      font-family: var(--display);
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: .04em;
-      padding: 16px 36px;
-      border-radius: 12px;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      transition: transform .15s ease, box-shadow .2s ease, background .15s ease;
-      box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 8px 32px var(--blue-glow);
-      overflow: hidden;
-    }
-
-    /* Shimmer */
-    .cta-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.12) 50%, transparent 60%);
-      transform: translateX(-100%);
-      transition: transform .5s ease;
-    }
-    .cta-btn:hover::before { transform: translateX(100%); }
-    .cta-btn:hover {
-      background: #1d4ed8;
-      transform: translateY(-2px);
-      box-shadow: 0 0 0 1px rgba(255,255,255,.1), 0 16px 40px var(--blue-glow);
-    }
-    .cta-btn:active { transform: translateY(0); }
-
-    .cta-arrow {
-      font-size: 18px;
-      transition: transform .2s ease;
-    }
-    .cta-btn:hover .cta-arrow { transform: translateX(4px); }
-
-    .cta-sub {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-
-    /* ── Pipeline visual ────────────────────────────────── */
-    .pipeline {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      padding: 48px 24px 64px;
-      flex-wrap: wrap;
-    }
-
-    .pipe-node {
-      display: flex;
-      flex-direction: column;
       align-items: center;
       gap: 8px;
-      animation: fadeUp .6s ease both;
-    }
-    .pipe-node:nth-child(1) { animation-delay: .1s; }
-    .pipe-node:nth-child(3) { animation-delay: .2s; }
-    .pipe-node:nth-child(5) { animation-delay: .3s; }
-    .pipe-node:nth-child(7) { animation-delay: .4s; }
-
-    .pipe-icon {
-      width: 48px; height: 48px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-    .pipe-icon.active {
-      border-color: rgba(37,99,235,.4);
-      background: rgba(37,99,235,.08);
-      box-shadow: 0 0 20px rgba(37,99,235,.15);
-    }
-
-    .pipe-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
       letter-spacing: .1em;
       text-transform: uppercase;
-      text-align: center;
+      color: #5a5a7a;
+      text-decoration: none;
+      background: #13131c;
+      border: 1px solid #2a2a3d;
+      border-radius: 8px;
+      padding: 8px 14px;
+      transition: color .15s, border-color .15s;
     }
-
-    .pipe-arrow {
-      width: 40px;
-      height: 1px;
-      background: linear-gradient(90deg, var(--border), rgba(37,99,235,.3), var(--border));
-      position: relative;
-      margin: 0 4px;
-      margin-bottom: 26px;
-    }
-    .pipe-arrow::after {
-      content: '›';
-      position: absolute;
-      right: -6px;
-      top: -9px;
-      color: var(--blue-mid);
-      font-size: 14px;
-      opacity: .6;
-    }
-
-    /* ── Footer ─────────────────────────────────────────── */
-    footer {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 24px;
-      border-top: 1px solid var(--border);
-    }
-    footer p {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: .1em;
-    }
-
-    /* ── Animations ─────────────────────────────────────── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .hero > * {
-      animation: fadeUp .7s ease both;
-    }
-    .eyebrow    { animation-delay: .05s; }
-    .name       { animation-delay: .15s; }
-    .matric-wrap{ animation-delay: .25s; }
-    .course-info{ animation-delay: .32s; }
-    .cta-wrap   { animation-delay: .4s; }
-
-    /* ── Responsive ─────────────────────────────────────── */
-    @media (max-width: 600px) {
-      nav { padding: 16px 20px; }
-      .pipe-arrow { width: 20px; }
-      .course-info { gap: 16px; }
-      .dot-divider { display: none; }
+    .back-btn:hover {
+      color: #4da6ff;
+      border-color: #4da6ff;
     }
   </style>
 </head>
 <body>
 
-  <!-- Nav -->
-  <nav>
-    <span class="nav-brand">VUNA&nbsp;&nbsp;·&nbsp;&nbsp;SEN 482</span>
-    <span class="nav-badge">DevOps — CI/CD</span>
-  </nav>
+  <a href="/" class="back-btn">← Home</a>
 
-  <!-- Hero -->
-  <main class="hero">
-    <div class="eyebrow">Defense Submission</div>
+  <div class="wrapper">
+    <div class="calculator">
 
-    <h1 class="name">
-      <span class="first">Williams David</span>
-      <span class="last">Urahojo</span>
-    </h1>
+      <div class="brand">VUNA<span>CALC</span></div>
 
-    <div class="matric-wrap">
-      <span class="matric-label">Matric No.</span>
-      <span class="matric-value">VUG/SEN/22/7030</span>
-    </div>
-
-    <div class="course-info">
-      <div class="course-item">
-        <span class="course-item-label">Course</span>
-        <span class="course-item-value">SEN 482</span>
+      <!-- Display -->
+      <div class="display">
+        <div class="expression" id="expression"></div>
+        <div class="result" id="result">0</div>
       </div>
-      <div class="dot-divider"></div>
-      <div class="course-item">
-        <span class="course-item-label">Title</span>
-        <span class="course-item-value">DevOps Engineering</span>
+
+      <!-- Buttons -->
+      <div class="buttons">
+        <!-- Row 1: utility + sign toggle + % -->
+        <button class="btn utility" data-action="ac">AC</button>
+        <button class="btn utility" data-action="ce">CE</button>
+        <button class="btn utility" data-action="sign">+/−</button>
+        <button class="btn operator" data-action="percent">%</button>
+
+        <!-- Row 2 -->
+        <button class="btn digit" data-value="7">7</button>
+        <button class="btn digit" data-value="8">8</button>
+        <button class="btn digit" data-value="9">9</button>
+        <button class="btn operator" data-action="op" data-value="/">÷</button>
+
+        <!-- Row 3 -->
+        <button class="btn digit" data-value="4">4</button>
+        <button class="btn digit" data-value="5">5</button>
+        <button class="btn digit" data-value="6">6</button>
+        <button class="btn operator" data-action="op" data-value="*">×</button>
+
+        <!-- Row 4 -->
+        <button class="btn digit" data-value="1">1</button>
+        <button class="btn digit" data-value="2">2</button>
+        <button class="btn digit" data-value="3">3</button>
+        <button class="btn operator" data-action="op" data-value="-">−</button>
+
+        <!-- Row 5 -->
+        <button class="btn digit zero" data-value="0">0</button>
+        <button class="btn digit" data-value=".">.</button>
+        <button class="btn operator" data-action="op" data-value="+">+</button>
+
+        <!-- Equals: full row -->
+        <button class="btn equals" data-action="equals">=</button>
       </div>
-      <div class="dot-divider"></div>
-      <div class="course-item">
-        <span class="course-item-label">Lecturer</span>
-        <span class="course-item-value">Mr. Iyke</span>
+
+    </div>
+
+    <!-- History panel -->
+    <div class="history-panel">
+      <div class="history-header">
+        <span>History</span>
+        <button id="clearHistory">Clear</button>
       </div>
-      <div class="dot-divider"></div>
-      <div class="course-item">
-        <span class="course-item-label">Weight</span>
-        <span class="course-item-value">30 Marks</span>
-      </div>
+      <ul id="historyList"></ul>
     </div>
+  </div>
 
-    <div class="cta-wrap">
-      <a href="/calc" class="cta-btn">
-        Launch Calculator
-        <span class="cta-arrow">→</span>
-      </a>
-      <span class="cta-sub">CI/CD Continuous Assessment</span>
-    </div>
-  </main>
-
-  <!-- Pipeline visual -->
-  <section class="pipeline">
-    <div class="pipe-node">
-      <div class="pipe-icon active">⌨️</div>
-      <span class="pipe-label">Code Push</span>
-    </div>
-    <div class="pipe-arrow"></div>
-    <div class="pipe-node">
-      <div class="pipe-icon active">🧪</div>
-      <span class="pipe-label">Lint & Test</span>
-    </div>
-    <div class="pipe-arrow"></div>
-    <div class="pipe-node">
-      <div class="pipe-icon active">🐳</div>
-      <span class="pipe-label">Docker Build</span>
-    </div>
-    <div class="pipe-arrow"></div>
-    <div class="pipe-node">
-      <div class="pipe-icon active">🚀</div>
-      <span class="pipe-label">FTP Deploy</span>
-    </div>
-    <div class="pipe-arrow"></div>
-    <div class="pipe-node">
-      <div class="pipe-icon active">🌐</div>
-      <span class="pipe-label">Live Site</span>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <p>Veritas University, Abuja &nbsp;·&nbsp; Bachelor of Science, Software Engineering &nbsp;·&nbsp; 2025/2026</p>
-  </footer>
-
+  <!-- Load engine first, then UI wiring -->
+  <script src="../src/calculator.js"></script>
+  <script src="../src/ui.js"></script>
 </body>
 </html>
